@@ -1,12 +1,12 @@
 #ifndef IMAGE_HPP
 #define IMAGE_HPP
 
-#include <fstream>
+#include <string>
 
 namespace convertator
 {
-  void classicRGB(const std::ifstream & in);
-  void bw(const std::ifstream & in);
+  void convertToRGB(const std::string & fileName);
+  void convertToBW(const std::string & fileName);
 }
 
 #endif
