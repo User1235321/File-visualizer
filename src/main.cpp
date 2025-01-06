@@ -11,6 +11,7 @@ int main()
 
   std::map < std::string, std::function < void(const std::string &) > > convertors;
   convertors["rgb"] = convertator::convertToRGB;
+  convertors["bw"] = convertator::convertToBW;
 
   std::string fileName = "1";
   std::cout << "Please, write file name:\n";

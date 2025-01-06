@@ -100,13 +100,28 @@ size_t getFileSize(const std::string & fileName)
   file.seekg (0, std::ios::end);
   end = file.tellg();
   file.close();
+  return (end - begin);
+}
+
+size_t getRGBImageSize(const std::string & fileName)
+{
+  std::streampos begin, end;
+  std::ifstream file (fileName, std::ios::binary);
+  if (!file.is_open() || !file.good())
+  {
+    throw std::logic_error("Error: can't open file!");
+  }
+  begin = file.tellg();
+  file.seekg (0, std::ios::end);
+  end = file.tellg();
+  file.close();
   size_t fileSize = std::sqrt((end - begin - 1) / 3);
   return (fileSize + 1);
 }
 
 void convertator::convertToRGB(const std::string & fileName)
 {
-  size_t size = getFileSize(fileName);
+  size_t size = getRGBImageSize(fileName);
   std::ifstream file (fileName);
   if (!file.is_open() || !file.good())
   {
@@ -134,4 +149,56 @@ void convertator::convertToRGB(const std::string & fileName)
   generateBitmapImage((unsigned char*) image, height, width, imageFileName);
   printf("Image generated!!");
   file.close();
-};
+}
+
+void convertator::convertToBW(const std::string & fileName)
+{
+  size_t fileSize = getFileSize(fileName);
+  std::ifstream file(fileName, std::ios::binary);
+  if (!file.is_open() || !file.good())
+  {
+    throw std::logic_error("Error: can't open file!");
+  }
+
+  // Вычисляем размеры изображения, делая его максимально квадратным
+  size_t size = std::ceil(std::sqrt(fileSize));
+  int height = size, width = size;
+  
+  unsigned char image[height][width][BYTES_PER_PIXEL];
+  char* imageFileName = (char*) "bitmapImageBW.bmp";
+  
+  // Читаем файл побайтово
+  char byte;
+  for (size_t i = 0; i < height && !file.eof(); ++i)
+  {
+    for (size_t j = 0; j < width && !file.eof(); ++j)
+    {
+      file.get(byte);
+      // Используем значение байта как яркость пикселя
+      unsigned char pixelValue = static_cast<unsigned char>(byte);
+      
+      // Устанавливаем одинаковое значение для всех цветовых каналов
+      image[i][j][0] = pixelValue; // Blue
+      image[i][j][1] = pixelValue; // Green
+      image[i][j][2] = pixelValue; // Red
+    }
+  }
+
+  // Заполняем оставшееся пространство черным цветом, если файл закончился
+  for (size_t i = 0; i < height; ++i)
+  {
+    for (size_t j = 0; j < width; ++j)
+    {
+      if (i * width + j >= fileSize)
+      {
+        image[i][j][0] = 0;
+        image[i][j][1] = 0;
+        image[i][j][2] = 0;
+      }
+    }
+  }
+
+  generateBitmapImage((unsigned char*) image, height, width, imageFileName);
+  printf("Black and white image generated!!");
+  file.close();
+}
