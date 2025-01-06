@@ -10,8 +10,7 @@ int main()
   std::cout << "This is programm, which convert your file to bmp image. At the moment there are next types of convert: rgb, bw. To use it, write \"rgb\" or \"bw\" after name of file\n";
 
   std::map < std::string, std::function < void(const std::string &) > > convertors;
-  convertors["rgb"] = convertator::convrtToRGB;
-  convertors["bw"] = convertator::convertToBW;
+  convertors["rgb"] = convertator::convertToRGB;
 
   std::string fileName = "1";
   std::cout << "Please, write file name:\n";
